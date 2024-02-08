@@ -2,24 +2,11 @@ import { useRef, useState, useEffect } from "react";
 import Msg from "./msg";
 
 export default function questionBlock() {
-    const [isActive, changeactiveStatus] = useState(false);
     const [score, changeScore] = useState(0);
-    function AddMessage(message, isPositive) {
-        useEffect(() => {
-            if (isActive) {
-                setTimeout(() => {
-                    changeactiveStatus(false);
-                }, 2000);
-            }
-        }, [isActive]);
-        return (
-            <>
-                <Msg message={message} type={isPositive} active={isActive} />
-            </>
-        );
-    }
+    const [msg, changeMsg] = useState('');
+    const isPositive = useRef('');
     const [number, changeNumber] = useState(1);
-    const answerElement = useRef();
+    const selectedanswer = useRef();
     const questions = [
         {
             question: 'What is the full form of HTML?',
@@ -63,7 +50,7 @@ export default function questionBlock() {
                 {(question.options).map((option, index) => {
                     return (
                         <div className="flex gap-2">
-                            <input ref={answerElement} type="radio" name="option" id={"option" + (index + 1)} />
+                            <input onChange={()=>{selectedanswer.current = option}} type="radio" name="option" id={"option" + (index + 1)} />
                             <label htmlFor={"option" + (index + 1)}>{option}</label>
                         </div>
                     );
@@ -75,26 +62,28 @@ export default function questionBlock() {
                         if (number > 1) {
                             changeNumber(number - 1);
                         } else {
-                            changeactiveStatus(true);
+                            isPositive.current = false;
+                            changeMsg('this is first');
                         }
                     }}
                     className="rounded-lg text-white bg-red-600 w-15 p-2 hover:bg-red-700">Previous</button>
                 <button type="submit"
                     onClick={() => {
-                        console.log(answerElement.current, questions[number]['options'][questions[number]['answer']]);
-                        if (answerElement.current === questions[number]['options'][questions[number]['answer']]) {
-                            changeactiveStatus(true);
+                        console.log(selectedanswer.current, questions[number-1]['options'][questions[number-1]['answer']]);
+                        if (selectedanswer.current === questions[number-1]['options'][questions[number-1]['answer']]) {
+                            console.log(true);
+                            isPositive.current = true;
                             changeNumber(number + 1);
                             changeScore(score + 1);
-                            // AddMessage('Correct', true);
+                            changeMsg('correct');
                         } else {
-                            changeactiveStatus(true);
-                            // AddMessage('answer is wrong', false);
+                            isPositive.current = false;
+                            changeMsg('inCorrect');
                         }
                     }}
                     className="rounded-lg text-white bg-green-600 w-15 p-2 hover:bg-green-700">Next</button>
             </div>
-            {/* { AddMessage('hello', false) } */}
+            <Msg message={msg} isPositive={isPositive.current}/>
         </>
     );
 }
