@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 
-export default function msg({ message, isPositive }) {
-    const [isActive, changeactiveStatus] = useState(true);
+export default function msg({ message, isPositive, isButtonClicked, setIfButtonClicked }) {
+    const [isActive, changeactiveStatus] = useState(false);
     useEffect(() => {
-        changeactiveStatus(true);
-        let id = setTimeout(() => {
-            changeactiveStatus(false);
-        }, 2000);
-        return (() => clearTimeout(id));
-    }, [message, isPositive]);
+        if (isButtonClicked) {
+            changeactiveStatus(true);
+            const id = setTimeout(() => {
+                changeactiveStatus(false);
+                setIfButtonClicked(false);
+            }, 2000);
+            return (() => clearTimeout(id));
+        }
+    }, [isButtonClicked]);
     return (
         <>
             <div className={'px-4 py-1 absolute top-0 left-1/2 -translate-x-1/2 rounded-xl transition-all border-2 ' +
